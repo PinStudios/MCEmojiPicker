@@ -108,6 +108,9 @@ final class MCEmojiPickerView: UIView {
     
     private weak var delegate: MCEmojiPickerViewDelegate?
     
+    /// Whether the one-time UI setup from `draw(_:)` has already run.
+    private var didSetupUI = false
+    
     // MARK: - Initializers
     
     init(categoryTypes: [MCEmojiCategoryType] = MCEmojiCategoryType.allCases, delegate: MCEmojiPickerViewDelegate) {
@@ -126,6 +129,10 @@ final class MCEmojiPickerView: UIView {
     
     override func draw(_ rect: CGRect) {
         super.draw(rect)
+        // draw(_:) can be called more than once (it is on iOS 26). The setup below adds
+        // subviews and constraints, so it must only ever run a single time.
+        guard !didSetupUI else { return }
+        didSetupUI = true
         setupCategoryViews()
         setupCollectionViewLayout()
         setupCollectionViewBottomInsets()
